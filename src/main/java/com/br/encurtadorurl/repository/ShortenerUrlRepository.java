@@ -6,4 +6,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ShortenerUrlRepository extends JpaRepository<ShortenerUrl, Integer> {
+
+    boolean existsByShortUrl(String shortUrl);
+
+    ShortenerUrl findByShortUrl(String shortUrl);
 }
