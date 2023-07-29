@@ -39,6 +39,12 @@ public class ShortenerUrlBuilder {
                 .build();
     }
 
+    public static ShortenerUrlRequest newShortenerUrlRequestUrlNull() {
+        return ShortenerUrlRequest.builder()
+                .originUrl(null)
+                .build();
+    }
+
     public static ShortenerUrlMetricResponse newShortenerUrlMetricResponse() {
         return ShortenerUrlMetricResponse.builder()
                 .originUrl("https://pt.aliexpress.com/?gatewayAdapt=Msite2Pc")

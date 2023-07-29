@@ -2,6 +2,7 @@ package com.br.encurtadorurl.tests;
 
 import com.br.encurtadorurl.builders.ShortenerUrlBuilder;
 import com.br.encurtadorurl.domain.ShortenerUrl;
+import com.br.encurtadorurl.dto.request.ShortenerUrlRequest;
 import com.br.encurtadorurl.dto.response.ShortenerUrlMetricResponse;
 import com.br.encurtadorurl.dto.response.ShortenerUrlResponse;
 import com.br.encurtadorurl.exception.BusinessException;
@@ -20,8 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -81,6 +81,28 @@ public class ShortenerUrlServiceImplTest {
         assertNotNull(shortUrl);
     }
 
+    @Test(expected = BusinessException.class)
+    public void testMustCreateUrlNullError() {
+        //(SETUP)
+
+        //(ACT)
+        ShortenerUrlResponse shortUrl = service.createShortUrl(ShortenerUrlBuilder.newShortenerUrlRequestUrlNull());
+
+        //(ASSERT)
+        assertNull(shortUrl);
+    }
+
+    @Test(expected = BusinessException.class)
+    public void testMustCreateUrlEmptyError() {
+        //(SETUP)
+        ShortenerUrlRequest shortenerUrlRequest = new ShortenerUrlRequest("");
+        //(ACT)
+        ShortenerUrlResponse shortUrl = service.createShortUrl(shortenerUrlRequest);
+
+        //(ASSERT)
+        assertNull(shortUrl);
+    }
+
     @Test()
     public void testMustGetUrlDirectWithSuccess() throws IOException {
         HttpServletResponse response = mock(HttpServletResponse.class);
@@ -105,6 +127,7 @@ public class ShortenerUrlServiceImplTest {
     @Test(expected = IOException.class)
     public void testMustGetUrlDirectWithError() throws IOException {
         HttpServletResponse response = mock(HttpServletResponse.class);
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         Map<String, ShortenerUrl> map = new HashMap<>();
         //(SETUP)
         when(repository.findByHash(any())).thenReturn(Optional.of(ShortenerUrlBuilder.newShortenerUrlEntity()));
@@ -129,6 +152,8 @@ public class ShortenerUrlServiceImplTest {
 
         //(ASSERT)
         assertNotNull(metricUrl);
+        assertEquals(0, metricUrl.getTotalClicks());
+        assertNull(metricUrl.getLastAccess());
 
 
     }
