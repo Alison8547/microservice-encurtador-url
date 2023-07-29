@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+
+  db:
+    container_name: postgres
+    image: postgres:alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: test_db
+    ports:
+      - "5432:5432"
+    networks:
+      - postgres-compose-network
+
+
+networks:
+  postgres-compose-network:
+    driver: bridge

@@ -1,0 +1,23 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: encurtador-url
+  profiles:
+    active:
+      - local
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile:
+        - local
+  datasource:
+    url: jdbc:postgresql://localhost:5432/test_db
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
