@@ -31,6 +31,9 @@ public class ShortenerUrl implements Serializable {
     @Column(name = "short_url")
     private String shortUrl;
 
+    @Column(name = "hash_url")
+    private String hash;
+
     @Column(name = "time_register")
     private LocalDateTime timeRegister;
 

@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
+
 @RestController
 @RequiredArgsConstructor
 public class ShortenerUrlControllerImpl implements ShortenerUrlController {
@@ -17,5 +19,11 @@ public class ShortenerUrlControllerImpl implements ShortenerUrlController {
     @Override
     public ResponseEntity<ShortenerUrlResponse> create(ShortenerUrlRequest shortenerUrlRequest) {
         return new ResponseEntity<>(urlService.createShortUrl(shortenerUrlRequest), HttpStatus.CREATED);
+    }
+
+    @Override
+    public ResponseEntity<Void> redirectUrlOrigin(HttpServletResponse response, String hash) {
+        urlService.getRedirectUrlOrigin(response, hash);
+        return ResponseEntity.noContent().build();
     }
 }
