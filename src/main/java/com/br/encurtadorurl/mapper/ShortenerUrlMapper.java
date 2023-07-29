@@ -2,6 +2,7 @@ package com.br.encurtadorurl.mapper;
 
 import com.br.encurtadorurl.domain.ShortenerUrl;
 import com.br.encurtadorurl.dto.request.ShortenerUrlRequest;
+import com.br.encurtadorurl.dto.response.ShortenerUrlMetricResponse;
 import com.br.encurtadorurl.dto.response.ShortenerUrlResponse;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -19,5 +20,9 @@ public class ShortenerUrlMapper {
 
     public ShortenerUrlResponse toShortenerUrlResponse(ShortenerUrl shortenerUrl) {
         return mapper.map(shortenerUrl, ShortenerUrlResponse.class);
+    }
+
+    public ShortenerUrlMetricResponse toShortenerUrlMetricResponse(ShortenerUrl shortenerUrl) {
+        return mapper.map(shortenerUrl, ShortenerUrlMetricResponse.class);
     }
 }

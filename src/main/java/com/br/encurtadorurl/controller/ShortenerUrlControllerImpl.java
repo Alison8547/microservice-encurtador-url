@@ -1,6 +1,7 @@
 package com.br.encurtadorurl.controller;
 
 import com.br.encurtadorurl.dto.request.ShortenerUrlRequest;
+import com.br.encurtadorurl.dto.response.ShortenerUrlMetricResponse;
 import com.br.encurtadorurl.dto.response.ShortenerUrlResponse;
 import com.br.encurtadorurl.service.ShortenerUrlService;
 import lombok.RequiredArgsConstructor;
@@ -25,5 +26,10 @@ public class ShortenerUrlControllerImpl implements ShortenerUrlController {
     public ResponseEntity<Void> redirectUrlOrigin(HttpServletResponse response, String hash) {
         urlService.getRedirectUrlOrigin(response, hash);
         return ResponseEntity.noContent().build();
+    }
+
+    @Override
+    public ResponseEntity<ShortenerUrlMetricResponse> getMetricUrl(String shortUrlHash) {
+        return new ResponseEntity<>(urlService.getMetricUrl(shortUrlHash), HttpStatus.OK);
     }
 }

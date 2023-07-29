@@ -1,6 +1,7 @@
 package com.br.encurtadorurl.controller;
 
 import com.br.encurtadorurl.dto.request.ShortenerUrlRequest;
+import com.br.encurtadorurl.dto.response.ShortenerUrlMetricResponse;
 import com.br.encurtadorurl.dto.response.ShortenerUrlResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -19,4 +20,7 @@ public interface ShortenerUrlController {
 
     @GetMapping("/s/{hash}")
     ResponseEntity<Void> redirectUrlOrigin(HttpServletResponse response, @PathVariable(name = "hash") String hash);
+
+    @GetMapping("/get-metric/{shortUrl}")
+    ResponseEntity<ShortenerUrlMetricResponse> getMetricUrl(@PathVariable(name = "shortUrl") String shortUrl);
 }

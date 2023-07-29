@@ -2,6 +2,7 @@ package com.br.encurtadorurl.service;
 
 import com.br.encurtadorurl.domain.ShortenerUrl;
 import com.br.encurtadorurl.dto.request.ShortenerUrlRequest;
+import com.br.encurtadorurl.dto.response.ShortenerUrlMetricResponse;
 import com.br.encurtadorurl.dto.response.ShortenerUrlResponse;
 import com.br.encurtadorurl.exception.BusinessException;
 import com.br.encurtadorurl.mapper.ShortenerUrlMapper;
@@ -28,6 +29,7 @@ public class ShortenerUrlServiceImpl implements ShortenerUrlService {
     private final ShortenerUrlRepository shortenerUrlRepository;
     private final ShortenerUrlMapper mapper;
     private static final Map<String, ShortenerUrl> map = new HashMap<>();
+    private static final Integer DEFAULT_CLICKS = 0;
 
 
     @Override
@@ -51,6 +53,7 @@ public class ShortenerUrlServiceImpl implements ShortenerUrlService {
         shortenerUrlEntity.setShortUrl(hostHashUrl);
         shortenerUrlEntity.setHash(hashUrl);
         shortenerUrlEntity.setTimeRegister(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
+        shortenerUrlEntity.setTotalClicks(DEFAULT_CLICKS);
         shortenerUrlRepository.save(shortenerUrlEntity);
         log.info("Saved ShortenerUrl success!");
 
@@ -59,12 +62,21 @@ public class ShortenerUrlServiceImpl implements ShortenerUrlService {
 
     @Override
     public void getRedirectUrlOrigin(HttpServletResponse httpServletResponse, String hash) {
-        map.put(hash, findHash(hash));
+        ShortenerUrl shortenerUrl = findHash(hash);
+        map.put(hash, shortenerUrl);
         try {
             httpServletResponse.sendRedirect(map.get(hash).getOriginUrl());
         } catch (IOException e) {
             throw new BusinessException(e.getMessage());
         }
+        shortenerUrl.setLastAccess(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
+        shortenerUrl.setTotalClicks(shortenerUrl.getTotalClicks() + 1);
+        shortenerUrlRepository.save(shortenerUrl);
+    }
+
+    @Override
+    public ShortenerUrlMetricResponse getMetricUrl(String shortUrl) {
+        return mapper.toShortenerUrlMetricResponse(findHash(shortUrl));
     }
 
     public ShortenerUrl findHash(String hash) {
