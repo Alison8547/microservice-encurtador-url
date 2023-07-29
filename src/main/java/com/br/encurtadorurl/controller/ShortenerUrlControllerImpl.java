@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,7 +24,7 @@ public class ShortenerUrlControllerImpl implements ShortenerUrlController {
     }
 
     @Override
-    public ResponseEntity<Void> redirectUrlOrigin(HttpServletResponse response, String hash) {
+    public ResponseEntity<Void> redirectUrlOrigin(HttpServletResponse response, String hash) throws IOException {
         urlService.getRedirectUrlOrigin(response, hash);
         return ResponseEntity.noContent().build();
     }

@@ -61,14 +61,10 @@ public class ShortenerUrlServiceImpl implements ShortenerUrlService {
     }
 
     @Override
-    public void getRedirectUrlOrigin(HttpServletResponse httpServletResponse, String hash) {
+    public void getRedirectUrlOrigin(HttpServletResponse httpServletResponse, String hash) throws IOException {
         ShortenerUrl shortenerUrl = findHash(hash);
         map.put(hash, shortenerUrl);
-        try {
-            httpServletResponse.sendRedirect(map.get(hash).getOriginUrl());
-        } catch (IOException e) {
-            throw new BusinessException(e.getMessage());
-        }
+        httpServletResponse.sendRedirect(map.get(hash).getOriginUrl());
         shortenerUrl.setLastAccess(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
         shortenerUrl.setTotalClicks(shortenerUrl.getTotalClicks() + 1);
         shortenerUrlRepository.save(shortenerUrl);
