@@ -41,6 +41,7 @@ public class ShortenerUrlServiceImplTest {
     public void testMustCreateUrlWithSuccess() {
         //(SETUP)
         when(repository.save(any())).thenReturn(ShortenerUrlBuilder.newShortenerUrlEntity());
+        when(shortenerUrlMapper.toShortenerUrlEntityWithResponse(any())).thenReturn(ShortenerUrlBuilder.newShortenerUrlEntity());
         when(shortenerUrlMapper.toShortenerUrlEntity(any())).thenReturn(ShortenerUrlBuilder.newShortenerUrlEntity());
         when(shortenerUrlMapper.toShortenerUrlResponse(any())).thenReturn(ShortenerUrlBuilder.newShortenerUrlResponse());
 
@@ -50,6 +51,9 @@ public class ShortenerUrlServiceImplTest {
         //(ASSERT)
         assertNotNull(shortUrl);
         assertEquals(ShortenerUrlBuilder.newShortenerUrlEntity().getShortUrl(), shortUrl.getShortUrl());
+        assertEquals("434f7bb0", shortenerUrlMapper.toShortenerUrlEntityWithResponse(shortUrl).getHash());
+        assertEquals(0, shortenerUrlMapper.toShortenerUrlEntityWithResponse(shortUrl).getTotalClicks());
+        assertNull(shortenerUrlMapper.toShortenerUrlEntityWithResponse(shortUrl).getLastAccess());
 
 
     }
@@ -59,6 +63,7 @@ public class ShortenerUrlServiceImplTest {
         //(SETUP)
         when(shortenerUrlMapper.toShortenerUrlEntity(any())).thenReturn(ShortenerUrlBuilder.newShortenerUrlEntity());
         when(shortenerUrlMapper.toShortenerUrlResponse(any())).thenReturn(ShortenerUrlBuilder.newShortenerUrlResponse());
+        when(shortenerUrlMapper.toShortenerUrlEntityWithResponse(any())).thenReturn(ShortenerUrlBuilder.newShortenerUrlEntity());
         when(repository.existsByShortUrl(any())).thenReturn(true);
 
         //(ACT)
@@ -66,6 +71,8 @@ public class ShortenerUrlServiceImplTest {
 
         //(ASSERT)
         assertNotNull(shortUrl);
+        assertEquals(ShortenerUrlBuilder.newShortenerUrlResponse().getShortUrl(), shortUrl.getShortUrl());
+        assertEquals("434f7bb0", shortenerUrlMapper.toShortenerUrlEntityWithResponse(shortUrl).getHash());
 
 
     }
@@ -79,6 +86,7 @@ public class ShortenerUrlServiceImplTest {
 
         //(ASSERT)
         assertNotNull(shortUrl);
+        assertThrows(BusinessException.class, () -> service.createShortUrl(ShortenerUrlBuilder.newShortenerUrlRequestInvalidUrl()));
     }
 
     @Test(expected = BusinessException.class)
@@ -90,6 +98,20 @@ public class ShortenerUrlServiceImplTest {
 
         //(ASSERT)
         assertNull(shortUrl);
+        assertThrows(BusinessException.class, () -> service.createShortUrl(ShortenerUrlBuilder.newShortenerUrlRequestUrlNull()));
+    }
+
+    @Test(expected = BusinessException.class)
+    public void testMustCreateUrlOnlyNumberError() {
+        //(SETUP)
+        ShortenerUrlRequest shortenerUrlRequest = ShortenerUrlBuilder.newShortenerUrlRequest();
+        shortenerUrlRequest.setOriginUrl("1");
+        //(ACT)
+        ShortenerUrlResponse shortUrl = service.createShortUrl(shortenerUrlRequest);
+
+        //(ASSERT)
+        assertNull(shortUrl);
+        assertThrows(BusinessException.class, () -> service.createShortUrl(ShortenerUrlBuilder.newShortenerUrlRequestUrlNull()));
     }
 
     @Test(expected = BusinessException.class)
@@ -101,6 +123,7 @@ public class ShortenerUrlServiceImplTest {
 
         //(ASSERT)
         assertNull(shortUrl);
+        assertThrows(BusinessException.class, () -> service.createShortUrl(shortenerUrlRequest));
     }
 
     @Test()
@@ -135,10 +158,7 @@ public class ShortenerUrlServiceImplTest {
         map.put(ShortenerUrlBuilder.newShortenerUrlEntity().getHash(), ShortenerUrlBuilder.newShortenerUrlEntity());
         //(ACT)
         service.getRedirectUrlOrigin(response, ShortenerUrlBuilder.newShortenerUrlEntity().getHash());
-
         throw new IOException("ERROR SIMULATOR");
-
-
     }
 
     @Test
@@ -148,12 +168,28 @@ public class ShortenerUrlServiceImplTest {
         when(shortenerUrlMapper.toShortenerUrlMetricResponse(any())).thenReturn(ShortenerUrlBuilder.newShortenerUrlMetricResponse());
 
         //(ACT)
-        ShortenerUrlMetricResponse metricUrl = service.getMetricUrl(ShortenerUrlBuilder.newShortenerUrlEntity().getShortUrl());
+        ShortenerUrlMetricResponse metricUrl = service.getMetricUrl(ShortenerUrlBuilder.newShortenerUrlEntity().getHash());
 
         //(ASSERT)
         assertNotNull(metricUrl);
         assertEquals(0, metricUrl.getTotalClicks());
         assertNull(metricUrl.getLastAccess());
+
+
+    }
+
+    @Test(expected = BusinessException.class)
+    public void testMustGetMetricWithError() {
+        Optional<ShortenerUrl> byHash = repository.findByHash("434f7bb0");
+        ShortenerUrl newShortenerUrlEntity = ShortenerUrlBuilder.newShortenerUrlEntity();
+        newShortenerUrlEntity.setHash("11fqr0dc");
+
+        //(ACT)
+        ShortenerUrlMetricResponse metricUrl = service.getMetricUrl(newShortenerUrlEntity.getHash());
+
+        //(ASSERT)
+        assertNull(metricUrl);
+        assertThrows(BusinessException.class, () -> byHash.get().getHash().equals(newShortenerUrlEntity.getHash()));
 
 
     }

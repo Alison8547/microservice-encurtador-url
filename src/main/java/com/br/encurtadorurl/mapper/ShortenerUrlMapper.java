@@ -18,6 +18,10 @@ public class ShortenerUrlMapper {
         return mapper.map(shortenerUrlRequest, ShortenerUrl.class);
     }
 
+    public ShortenerUrl toShortenerUrlEntityWithResponse(ShortenerUrlResponse shortenerUrlResponse) {
+        return mapper.map(shortenerUrlResponse, ShortenerUrl.class);
+    }
+
     public ShortenerUrlResponse toShortenerUrlResponse(ShortenerUrl shortenerUrl) {
         return mapper.map(shortenerUrl, ShortenerUrlResponse.class);
     }
