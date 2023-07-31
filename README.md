@@ -29,9 +29,19 @@ Na janela que abrir, deve ser inserida as informações da conexão nos campos:
  - d) Username: postgres
  - e) Password: postgres
 
-Depois rodar o Script salvo na raiz do prejeto na pasta script vai está lá o shortener-script.sql
-
 ![alt text](Capturar1.PNG)
+Depois rodar o Script salvo na raiz do prejeto na pasta script vai está lá o shortener-script.sql
+```
+create table shortener_url(
+	id serial primary key,
+	origin_url text not null,
+	short_url text not null,
+	hash_url text not null,
+	time_register timestamp not null,
+	last_access timestamp,
+	total_clicks integer
+);
+```
 
 ---
 
